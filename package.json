@@ -1,0 +1,11 @@
+{
+  "name": "forwarder-alert",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Joydeep Singha",
+  "license": "MIT",
+  "dependencies": {
+    "@routerprotocol/router-chain-sdk-ts": "^0.8.65-beta-0.9",
+    "typescript": "^5.2.2"
+  }
+}
