@@ -3,6 +3,6 @@ services:
   forwader-alerter:
     build: .
     ports:
-      - "8080:6673"
+      - "6900:6673"
     env_file:
       - .env
