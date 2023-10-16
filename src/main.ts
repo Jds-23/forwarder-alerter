@@ -17,14 +17,23 @@ export default async function main(): Promise<Transaction[]> {
     chainConfig.forEach((chainConfig) => {
         let chainClient: ChainClient;
         const rpc = rpcs[chainConfig.chainId]?.rpc;
-        let contractAddress =
+        const contractAddress =
             contractConfig.find((config) => config.chainId === chainConfig.chainId)?.contractAddress;
-        // if (chainConfig.chainId === "2494104990") {
-        //     contractAddress = TronAddressToHex(contractAddress);
-        // }
         if (chainConfig.chainType === "CHAIN_TYPE_NEAR") {
-            chainClient = new NearChainClient(contractAddress);
+            if (!contractAddress) {
+                console.error(
+                    `Contract address not found for chainId: ${chainConfig.chainId}`
+                );
+                return;
+            }
+            chainClient = new NearChainClient(chainConfig, rpc, contractAddress);
         } else if (chainConfig.chainType === "CHAIN_TYPE_ROUTER") {
+            if (!contractAddress) {
+                console.error(
+                    `Contract address not found for chainId: ${chainConfig.chainId}`
+                );
+                return;
+            }
             chainClient = new RouterChainClient(contractAddress, ROUTER_CHAIN_EXPLORER_ENVIRONMENT);
         } else if (chainConfig.chainType === "CHAIN_TYPE_EVM") {
             if (!rpc || !contractAddress) {
@@ -33,7 +42,12 @@ export default async function main(): Promise<Transaction[]> {
                 );
                 return;
             }
-            chainClient = new EvmChainClient(chainConfig, rpc, contractAddress);
+            if (chainConfig.chainId === "2494104990") {
+                // contractAddress = ;
+                chainClient = new EvmChainClient(chainConfig, rpc, TronAddressToHex(contractAddress));
+            } else {
+                chainClient = new EvmChainClient(chainConfig, rpc, contractAddress);
+            }
         } else {
             console.error(
                 `Unsupported chain type ${chainConfig.chainType}`

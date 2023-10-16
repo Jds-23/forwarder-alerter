@@ -69,4 +69,7 @@ export default class RouterChainClient extends ChainClient {
         this.cachedTokensConfig[srcChainId + "-" + destChainId + "-" + srcToken.toLowerCase()] = result;
         return result;
     }
+    getContractAddress(): string {
+        return this.contractAddress;
+    }
 }

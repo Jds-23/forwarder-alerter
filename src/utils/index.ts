@@ -7,17 +7,20 @@ const TronWeb = require('tronweb');
 export function getRpcFromEnv(): Rpc {
     const data = {
         "80001": {
-            "rpc": process.env.MATIC_RPC,
+            "rpc": process.env.MATIC_RPC ?? "",
         },
         "43113": {
-            "rpc": process.env.FUJI_RPC,
+            "rpc": process.env.FUJI_RPC ?? "",
         },
         "5": {
-            "rpc": process.env.GOERLI_RPC,
+            "rpc": process.env.GOERLI_RPC ?? "",
         },
         "2494104990": {
-            "rpc": process.env.TRON_RPC,
-        }
+            "rpc": process.env.TRON_RPC ?? "",
+        },
+        "near-testnet": {
+            "rpc": process.env.NEAR_RPC ?? "",
+        },
     };
     return data;
 }
@@ -116,7 +119,7 @@ export function getIRelayClaimId(
     return hash;
 }
 
-function stringToBytes32(str: string): string {
+export function stringToBytes32(str: string): string {
     const strBytes = ethers.utils.toUtf8Bytes(str);
     const paddedBytes = ethers.utils.hexlify(
         ethers.utils.concat([
@@ -127,7 +130,7 @@ function stringToBytes32(str: string): string {
     return paddedBytes;
 }
 
-function bytes32ToUint8Array(bytes32) {
+export function bytes32ToUint8Array(bytes32: string) {
     const hexString = bytes32.slice(2); // remove the '0x' prefix
     const uint8Array = new Array(32);
     for (let i = 0; i < 32; i++) {

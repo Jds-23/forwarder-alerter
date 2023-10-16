@@ -49,4 +49,8 @@ export class EvmChainClient extends ChainClient {
             return e.hasOwnProperty("message") ? e.message : JSON.stringify(e);
         }
     }
+
+    getContractAddress(): string {
+        return this.contractAddress;
+    }
 }

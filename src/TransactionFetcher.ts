@@ -30,7 +30,8 @@ export default class TransactionFetcher {
                 return this.processTransaction(transaction, tokenConfig)
             }));
 
-            const transactionsToAlert = results.filter(result => result !== undefined);
+            // @ts-ignore
+            const transactionsToAlert: Transaction[] = results.filter(result => result !== undefined);
             console.log(transactionsToAlert.length, "transactions found of pending status for more than 1hr");
 
             return transactionsToAlert;
@@ -47,12 +48,12 @@ export default class TransactionFetcher {
 
             const claimId = getIRelayClaimId({
                 Amount: normalizeAmount(transaction.dest_stable_amount, transaction.dest_chain_id, queryResult?.data?.toLowerCase(), tokenConfig),
-                SrcChainId: transaction.src_chain_id,
-                DepositId: transaction.deposit_id?.toLowerCase(),
+                SrcChainId: transaction?.src_chain_id,
+                DepositId: transaction?.deposit_id?.toLowerCase(),
                 DestToken: queryResult?.data?.toLowerCase(),
-                Recipient: transaction.recipient_address?.toLowerCase(),
-                Depositor: transaction.depositor_address.toLowerCase(),
-            }, this.chainClients[transaction.dest_chain_id].contractAddress?.toLowerCase(), transaction.message?.toLowerCase() ?? null);
+                Recipient: transaction?.recipient_address?.toLowerCase(),
+                Depositor: transaction?.depositor_address?.toLowerCase(),
+            }, this.chainClients[transaction.dest_chain_id]?.getContractAddress(), transaction.message?.toLowerCase() ?? null);
             if (!claimId) return undefined;
 
             const result = await this.chainClients[transaction.dest_chain_id].getExecuteRecord(claimId);
