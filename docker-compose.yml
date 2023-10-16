@@ -1,0 +1,8 @@
+version: '1.0'
+services:
+  forwader-alerter:
+    build: .
+    ports:
+      - "8080:6673"
+    env_file:
+      - .env
