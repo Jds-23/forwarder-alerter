@@ -34,7 +34,13 @@ export default class TransactionFetcher {
             const transactionsToAlert: Transaction[] = results.filter(result => result !== undefined);
             console.log(transactionsToAlert.length, "transactions found of pending status for more than 1hr");
 
-            return transactionsToAlert;
+            return transactionsToAlert.map(transaction => {
+                return {
+                    ...transaction,
+                    src_chain_name: this.chainClients[transaction.src_chain_id]?.getChainName(),
+                    dest_chain_name: this.chainClients[transaction.dest_chain_id]?.getChainName(),
+                }
+            });
         } catch (error) {
             throw new Error("Error fetching transactions:" + error);
         }

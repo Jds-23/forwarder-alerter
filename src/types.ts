@@ -20,6 +20,8 @@ export interface Transaction {
     message: string;
     message_hash: string;
     depositor_address: string;
+    src_stable_symbol: string;
+    src_chain_name: string;
 }
 export interface Rpc {
     [chainId: string]: {

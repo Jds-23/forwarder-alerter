@@ -5,4 +5,5 @@ export interface ChainClients {
 export default abstract class ChainClient {
     abstract getExecuteRecord(claimId: string): Promise<any>;  // Abstract method
     abstract getContractAddress(): string;  // Abstract method
+    abstract getChainName(): string;  // Abstract method
 }

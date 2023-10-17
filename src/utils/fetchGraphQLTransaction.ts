@@ -19,6 +19,8 @@ export default async function fetchGraphQLTransactions(): Promise<any> {
                         depositor_address
                         message
                         dest_chain_id
+                        src_stable_symbol
+                        src_tx_hash
                     }
                 }
             }

@@ -53,4 +53,7 @@ export class EvmChainClient extends ChainClient {
     getContractAddress(): string {
         return this.contractAddress;
     }
+    getChainName(): string {
+        return this.chainConfig.chainName;
+    }
 }

@@ -72,4 +72,7 @@ export default class RouterChainClient extends ChainClient {
     getContractAddress(): string {
         return this.contractAddress;
     }
+    getChainName(): string {
+        return "router";
+    }
 }

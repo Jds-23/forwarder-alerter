@@ -64,4 +64,7 @@ export class NearChainClient extends ChainClient {
     getContractAddress(): string {
         return this.contractAddress;
     }
+    getChainName(): string {
+        return this.chainConfig.chainName;
+    }
 }

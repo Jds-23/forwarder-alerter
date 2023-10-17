@@ -3,10 +3,9 @@ import { EvmChainClient } from "./ChainClient/EvmChainClient";
 import { NearChainClient } from "./ChainClient/NearChainClient";
 import RouterChainClient from "./ChainClient/RouterChainClient";
 import TransactionFetcher from "./TransactionFetcher";
-import { ROUTER_CHAIN_EXPLORER_ENVIRONMENT, VOYAGER_MIDDLEWARE_ADDRESS } from "./constant";
+import { ROUTER_CHAIN_EXPLORER_ENVIRONMENT } from "./constant";
 import { ChainConfig, Transaction } from "./types";
-import { TronAddressToHex, getChainConfig, getContractConfig, getIRelayClaimId, getRpcFromEnv, normalizeAmount } from "./utils";
-import fetchGraphQLTransactions from "./utils/fetchGraphQLTransaction";
+import { TronAddressToHex, getChainConfig, getContractConfig, getRpcFromEnv } from "./utils";
 
 export default async function main(): Promise<Transaction[]> {
     let chainConfig: ChainConfig[];
