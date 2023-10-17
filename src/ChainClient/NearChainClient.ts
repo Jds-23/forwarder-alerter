@@ -1,5 +1,5 @@
 import { Contract } from "near-api-js";
-import { NEAR_CREDENTIALS_PATH, NEAR_RPC_URL, NEAR_ACCOUNT_ID } from "../constant";
+import { NEAR_ACCOUNT_ID } from "../constant";
 import ChainClient from ".";
 import { bytes32ToUint8Array } from "../utils";
 import { ChainConfig } from "../types";
