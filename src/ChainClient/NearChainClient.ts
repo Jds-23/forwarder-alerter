@@ -5,8 +5,8 @@ import { bytes32ToUint8Array } from "../utils";
 import { ChainConfig } from "../types";
 const nearAPI = require("near-api-js");
 
-const { keyStores, connect } = nearAPI;
-const myKeyStore = new keyStores.UnencryptedFileSystemKeyStore(NEAR_CREDENTIALS_PATH);
+const { connect } = nearAPI;
+// const myKeyStore = new keyStores.UnencryptedFileSystemKeyStore(NEAR_CREDENTIALS_PATH);
 
 export class NearChainClient extends ChainClient {
     chainConfig: ChainConfig;
@@ -27,8 +27,11 @@ export class NearChainClient extends ChainClient {
         const connectionConfig = {
             networkId: "testnet",
             // networkId: this.chainConfig.chainId,
-            keyStore: myKeyStore, // first create a key store 
+            // keyStore: myKeyStore, // first create a key store 
             nodeUrl: this.rpc,
+            // walletUrl: "https://wallet.testnet.near.org",
+            // helperUrl: "https://helper.testnet.near.org",
+            // explorerUrl: "https://explorer.testnet.near.org",
         };
         const nearConnection = await connect(connectionConfig);
         const account = await nearConnection.account(NEAR_ACCOUNT_ID);

@@ -19,7 +19,7 @@ export function getRpcFromEnv(): Rpc {
             "rpc": process.env.TRON_RPC ?? "",
         },
         "near-testnet": {
-            "rpc": process.env.NEAR_RPC ?? "",
+            "rpc": process.env.NEAR_RPC_URL ?? "",
         },
     };
     return data;
@@ -33,9 +33,16 @@ export function normalizeAmount(amount: string, chainId: string, tokenAddress: s
         return tokenConfig[0].toLowerCase() === chainId && tokenConfig[1].toLowerCase() === tokenAddress.toLowerCase();
     });
     // @ts-ignore
-    return typeof (tokenConfig[2]) === "number" ? ethers.utils.parseUnits(amount, tokenConfig[2]).toString() : amount;
+    return typeof (tokenConfig[2]) === "number" ? ethers.utils.parseUnits(trim_decimal_overflow(amount, tokenConfig[2]), tokenConfig[2]).toString() : "0";
 }
+function trim_decimal_overflow(n: string, decimals: number) {
 
+    if (n.indexOf(".") === -1) return n
+
+    const arr = n.split(".");
+    const fraction = arr[1].substring(0, decimals);
+    return arr[0] + "." + fraction;
+}
 
 export function getIRelayClaimId(
     msg: {
@@ -137,9 +144,7 @@ export function bytes32ToUint8Array(bytes32: string) {
         const hexByte = hexString.slice(i * 2, i * 2 + 2);
         uint8Array[i] = parseInt(hexByte, 16);
     }
-    console.log(uint8Array);
     return uint8Array;
-
 }
 export async function getChainConfig(): Promise<ChainConfig[]> {
     try {

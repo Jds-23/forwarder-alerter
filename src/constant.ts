@@ -11,5 +11,4 @@ export const VOYAGER_MIDDLEWARE_ADDRESS = `router17hlelrccxutnpe6u0gw2tk52f6ekrw
 export const ROUTER_MULTICALLER = `router1wr6vc3g4caz9aclgjacxewr0pjlre9wl2uhq73rp8mawwmqaczsq08nnup`;
 export const NEAR_RPC_URL = process.env.NEAR_RPC_URL ?? "";
 
-export const NEAR_CREDENTIALS_PATH = process.env.NEAR_CREDENTIALS_PATH ?? "";
 export const NEAR_ACCOUNT_ID = process.env.NEAR_ACCOUNT_ID ?? "";
