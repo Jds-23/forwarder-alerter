@@ -3,10 +3,13 @@ const HEADERS = {
     "Content-Type": "application/json",
 };
 export default async function fetchGraphQLTransactions(): Promise<any> {
+    const now = new Date();
+    const timestampBefore1Hour = new Date(now.getTime() - 60 * 60 * 1000);
+    const timestampBefore1HourInSeconds = Math.floor(timestampBefore1Hour.getTime() / 1000);
     const requestBody = {
         query: `
             query Query {
-                transactions(filter:{depositor_address:{ne:null},status:{eq:"pending"}}) {
+                transactions(filter:{depositor_address:{ne:null},status:{eq:"pending"},created_timestamp:{gt:${timestampBefore1HourInSeconds}}}) {
                     data {
                         _id
                         created_timestamp
@@ -34,7 +37,7 @@ export default async function fetchGraphQLTransactions(): Promise<any> {
     });
 
     if (!response.ok) {
-        throw new Error('Failed to fetch transactions');
+        throw new Error(JSON.stringify(response));
     }
 
     const data = await response.json();
