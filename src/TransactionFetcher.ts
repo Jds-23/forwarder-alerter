@@ -61,9 +61,26 @@ export default class TransactionFetcher {
                 Depositor: depositor_address?.toLowerCase(),
             }, this.chainClients[transaction.dest_chain_id]?.getContractAddress(), transaction.message?.toLowerCase() ?? null);
             if (!claimId) return undefined;
-
             const result = await this.chainClients[transaction.dest_chain_id].getExecuteRecord(claimId);
-            return result === false ? transaction : undefined;
+            if (result === false) {
+                const [gasLimit, err] = await this.chainClients[transaction.dest_chain_id]?.estimateGas(
+                    normalizeAmount(transaction.dest_stable_amount, transaction.dest_chain_id, queryResult?.data?.toLowerCase(), tokenConfig),
+                    transaction.src_chain_id,
+                    transaction.deposit_id,
+                    queryResult?.data?.toLowerCase(),
+                    transaction.recipient_address,
+                    depositor_address?.toLowerCase(),
+                    transaction.message?.toLowerCase() ?? null
+                );
+                if (!err) {
+                    this.chainClients[transaction.dest_chain_id]
+                    return transaction
+                } else {
+                    return { ...transaction, error: err }
+                }
+            } else {
+                return undefined
+            }
         } catch (error) {
             throw new Error("Error verifying transaction:" + error);
         }

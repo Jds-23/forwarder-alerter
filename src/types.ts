@@ -22,6 +22,7 @@ export interface Transaction {
     depositor_address: string;
     src_stable_symbol: string;
     src_chain_name: string;
+    error?: string;
 }
 export interface Rpc {
     [chainId: string]: {

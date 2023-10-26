@@ -61,6 +61,13 @@ export class NearChainClient extends ChainClient {
             return e.hasOwnProperty("message") ? e.message : JSON.stringify(e);
         }
     }
+    async estimateGas(): Promise<any> {
+        try {
+            return [undefined, "Estimate not available"];
+        } catch (e: any) {
+            return e.hasOwnProperty("message") ? e.message : JSON.stringify(e);
+        }
+    }
     getContractAddress(): string {
         return this.contractAddress;
     }
