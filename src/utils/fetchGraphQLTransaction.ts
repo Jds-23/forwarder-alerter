@@ -9,7 +9,7 @@ export default async function fetchGraphQLTransactions(): Promise<any> {
     const requestBody = {
         query: `
             query Query {
-                transactions(filter:{depositor_address:{ne:null},status:{eq:"pending"}}) {
+                transactions(filter:{depositor_address:{ne:null},status:{eq:"pending"},created_timestamp:{gt:${timestampBefore1HourInSeconds}}}) {
                     data {
                         _id
                         created_timestamp
