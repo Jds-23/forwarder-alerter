@@ -74,4 +74,7 @@ export class NearChainClient extends ChainClient {
     getChainName(): string {
         return this.chainConfig.chainName;
     }
+    getChainConfig(): ChainConfig {
+        return this.chainConfig;
+    }
 }

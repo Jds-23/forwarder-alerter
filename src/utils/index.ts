@@ -1,5 +1,5 @@
-import { LCD_URL, LCD_URL_CONTRACT_CONFIG } from "../constant";
-import { ChainConfig, ContractConfig, Rpc } from "../types";
+import { LCD_URL, LCD_URL_CONTRACT_CONFIG, LCD_URL_GAS_PRICE, LCD_URL_PRICE_FEED } from "../constant";
+import { ChainConfig, ContractConfig, GasPrice, GasPrices, Rpc, TokenPrice, TokenPrices } from "../types";
 import { ethers } from "ethers";
 const TronWeb = require('tronweb');
 
@@ -27,13 +27,13 @@ export function getRpcFromEnv(): Rpc {
 
 export function normalizeAmount(amount: string, chainId: string, tokenAddress: string,
     tokenConfigs: [][]
-): string {
+): ethers.BigNumber {
     const tokenConfig = tokenConfigs.find((tokenConfig) => {
         // @ts-ignore
         return tokenConfig[0].toLowerCase() === chainId && tokenConfig[1].toLowerCase() === tokenAddress.toLowerCase();
     });
     // @ts-ignore
-    return typeof (tokenConfig[2]) === "number" ? ethers.utils.parseUnits(trim_decimal_overflow(amount, tokenConfig[2]), tokenConfig[2]).toString() : "0";
+    return typeof (tokenConfig[2]) === "number" ? ethers.utils.parseUnits(trim_decimal_overflow(amount, tokenConfig[2]), tokenConfig[2]) : ethers.BigNumber.from();
 }
 function trim_decimal_overflow(n: string, decimals: number) {
 
@@ -171,4 +171,25 @@ export function TronAddressToHex(address: string): string {
     const contractAddress = TronWeb.address.toHex(address);
     // replace "41" in start with "0x"
     return "0x" + contractAddress.slice(2);
+}
+
+export async function getGasPrices(): Promise<GasPrices> {
+    const response = await fetch(LCD_URL_GAS_PRICE);
+    const gasPriceArr = await response.json();
+    const result: any = {};
+    for (const obj of gasPriceArr.gasPrice) {
+        const { chainId, gasPrice, decimals } = obj;
+        result[chainId] = { gasPrice, decimals };
+    }
+    return result;
+}
+export async function getTokenPrices(): Promise<TokenPrices> {
+    const response = await fetch(LCD_URL_PRICE_FEED);
+    const tokenPriceArr = await response.json();
+    const result: any = {};
+    for (const obj of tokenPriceArr.price) {
+        const { symbol, price, decimals } = obj;
+        result[symbol] = { price, decimals };
+    }
+    return result;
 }

@@ -205,7 +205,6 @@ export class EvmChainClient extends ChainClient {
                 return [result.toString(), undefined];
             }
         } catch (e: any) {
-            console.error(e);
             return [undefined, e.hasOwnProperty("reason") ? e.reason : "Unknown error check logs"];
         }
     }
@@ -215,5 +214,8 @@ export class EvmChainClient extends ChainClient {
     }
     getChainName(): string {
         return this.chainConfig.chainName;
+    }
+    getChainConfig(): ChainConfig {
+        return this.chainConfig;
     }
 }

@@ -5,7 +5,7 @@ import RouterChainClient from "./ChainClient/RouterChainClient";
 import TransactionFetcher from "./TransactionFetcher";
 import { ROUTER_CHAIN_EXPLORER_ENVIRONMENT } from "./constant";
 import { ChainConfig, Transaction } from "./types";
-import { TronAddressToHex, getChainConfig, getContractConfig, getRpcFromEnv } from "./utils";
+import { TronAddressToHex, getChainConfig, getContractConfig, getGasPrices, getRpcFromEnv, getTokenPrices } from "./utils";
 
 export default async function main(): Promise<Transaction[]> {
     let chainConfig: ChainConfig[];
@@ -55,7 +55,9 @@ export default async function main(): Promise<Transaction[]> {
         }
         chainClients[chainConfig.chainId] = chainClient;
     });
-    const transactionFetcher = new TransactionFetcher(chainClients);
+    const tokenPrices = await getTokenPrices()
+    const gasPrices = await getGasPrices()
+    const transactionFetcher = new TransactionFetcher(chainClients, tokenPrices, gasPrices);
     return await transactionFetcher.fetchTransactions();
 }
 

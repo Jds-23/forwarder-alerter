@@ -1,18 +1,23 @@
 import { ChainClients } from "./ChainClient";
 import RouterChainClient from "./ChainClient/RouterChainClient";
 import { ROUTER_CHAIN_EXPLORER_ENVIRONMENT, VOYAGER_MIDDLEWARE_ADDRESS } from "./constant";
-import { Transaction } from "./types";
+import { GasPrices, TokenPrices, Transaction } from "./types";
 import { getIRelayClaimId, normalizeAmount, stringToBytes32 } from "./utils";
 import fetchGraphQLTransactions from "./utils/fetchGraphQLTransaction";
+import { ethers } from "ethers";
 
 export default class TransactionFetcher {
     chainClients: ChainClients;
     voyagerMiddleware: RouterChainClient;
     TIME_DIFFERENCE: number;
-    constructor(chainClients: ChainClients, timeDifference: number = 300000) {
+    tokenPrices: TokenPrices;
+    gasPrices: GasPrices;
+    constructor(chainClients: ChainClients, _tokenPrices: TokenPrices, _gasPrices: GasPrices, timeDifference: number = 300000) {
         this.chainClients = chainClients;
         this.voyagerMiddleware = new RouterChainClient(VOYAGER_MIDDLEWARE_ADDRESS, ROUTER_CHAIN_EXPLORER_ENVIRONMENT);
         this.TIME_DIFFERENCE = timeDifference;
+        this.tokenPrices = _tokenPrices;
+        this.gasPrices = _gasPrices;
     }
     async fetchTransactions(): Promise<Transaction[]> {
         try {
@@ -52,8 +57,10 @@ export default class TransactionFetcher {
 
             if (!queryResult?.data) return undefined;
             const depositor_address = transaction?.src_chain_id === "near-testnet" ? stringToBytes32(transaction?.depositor_address) : transaction?.depositor_address
+            const normalizedDestAmount = normalizeAmount(transaction.dest_stable_amount, transaction.dest_chain_id, queryResult.data.toLowerCase(), tokenConfig)
+            const normalizedSrcAmount = normalizeAmount(transaction.src_stable_amount, transaction.src_chain_id, transaction.src_stable_address.toLowerCase(), tokenConfig)
             const claimId = getIRelayClaimId({
-                Amount: normalizeAmount(transaction.dest_stable_amount, transaction.dest_chain_id, queryResult?.data?.toLowerCase(), tokenConfig),
+                Amount: normalizedDestAmount.toString(),
                 SrcChainId: transaction?.src_chain_id,
                 DepositId: transaction?.deposit_id?.toLowerCase(),
                 DestToken: queryResult?.data?.toLowerCase(),
@@ -64,7 +71,7 @@ export default class TransactionFetcher {
             const result = await this.chainClients[transaction.dest_chain_id].getExecuteRecord(claimId);
             if (result === false) {
                 const [gasLimit, err] = await this.chainClients[transaction.dest_chain_id]?.estimateGas(
-                    normalizeAmount(transaction.dest_stable_amount, transaction.dest_chain_id, queryResult?.data?.toLowerCase(), tokenConfig),
+                    normalizedDestAmount.toString(),
                     transaction.src_chain_id,
                     transaction.deposit_id,
                     queryResult?.data?.toLowerCase(),
@@ -72,13 +79,22 @@ export default class TransactionFetcher {
                     depositor_address?.toLowerCase(),
                     transaction.message?.toLowerCase() ?? null
                 );
-                if (!err) {
-                    this.chainClients[transaction.dest_chain_id]
-                    return transaction
+                if (gasLimit) {
+                    const gasPrice = ethers.utils.parseUnits(this.gasPrices[transaction.dest_chain_id]?.price ?? "0", this.gasPrices[transaction.dest_chain_id]?.decimals ?? "0");
+                    const nativeTokenPriceInUsd = ethers.utils.parseUnits(this.tokenPrices[transaction.dest_chain_id]?.price ?? "0", this.tokenPrices[transaction.dest_chain_id]?.decimals ?? "0");
+                    const gasPriceInUsd = gasPrice.mul(nativeTokenPriceInUsd)
+                    const gasFeeInUsd = gasPriceInUsd.mul(gasLimit)
+                    const providedGasFee = normalizedSrcAmount.sub(normalizedDestAmount)
+                    if (providedGasFee.gte(gasFeeInUsd)) {
+                        return transaction
+                    } else {
+                        return { ...transaction, error: "Gas fee is less than estimated gas fee" }
+                    }
                 } else {
                     return { ...transaction, error: err }
                 }
             } else {
+                console.log("Transaction already executed")
                 return undefined
             }
         } catch (error) {

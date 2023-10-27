@@ -13,6 +13,7 @@ export interface Transaction {
     dest_amount: string;
     deposit_id: string;
     dest_stable_amount: string;
+    src_stable_amount: string;
     recipient_address: string;
     sender_address: string;
     src_address: string;
@@ -45,4 +46,19 @@ export interface ContractConfig {
     contractAddress: string;
     contract_enabled: boolean;
     contractType: string;
+}
+
+export interface GasPrice {
+    price: string;
+    decimals: string;
+}
+export interface GasPrices {
+    [chainId: string]: GasPrice;
+}
+export interface TokenPrice {
+    price: string;
+    decimals: string;
+}
+export interface TokenPrices {
+    [symbol: string]: TokenPrice;
 }

@@ -1,6 +1,7 @@
 import { ChainGrpcWasmApi, ChainInfo, NetworkEndpoints, getNetworkInfo, getNetworkType, toUtf8, } from "@routerprotocol/router-chain-sdk-ts";
 import { ROUTER_CHAIN_EXPLORER_ENVIRONMENT } from "../constant";
 import ChainClient from ".";
+import { ChainConfig } from "../types";
 
 
 export default class RouterChainClient extends ChainClient {
@@ -81,5 +82,17 @@ export default class RouterChainClient extends ChainClient {
     }
     getChainName(): string {
         return "router";
+    }
+    getChainConfig(): ChainConfig {
+        return {
+            chainId: "router_9601-1",
+            chainName: "Mandara-testnet",
+            symbol: "ROUTE",
+            native_decimals: "18",
+            chainType: "CHAIN_TYPE_ROUTER",
+            confirmationsRequired: "0",
+            lastObservedValsetNonce: "0",
+            chain_enabled: true
+        }
     }
 }
